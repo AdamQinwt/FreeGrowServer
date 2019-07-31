@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0 , user-scalable=0 , minimum-scale=1.0 , maximum-scale=1.0" />
+    <title>水</title>
+    <link rel="stylesheet" type="text/css" href="../css/bordered.css" />
+    <script src="../js/ajaxtest.js"></script>
+    <script src="../js/jquery_1.10.2_jquery.min.js"></script>
+    <script>
+        var last_max = 100;
+        var last_min = 0;
+        function show(param) {
+            if (param == null) return;
+            //document.getElementById("Current").value=param.Current;
+            draw_current(param.Current);
+            document.getElementById("Time").value=param.Time;
+            document.getElementById("Max").value = param.Max;
+            document.getElementById("Min").value = param.Min;
+            refreshValue(true);
+        }
+        function send() {
+            var param = new Object;
+            //water.Current = parseInt(document.getElementById("current").value, 10);
+            param.Name = "water";
+            param.Current = 0;
+            param.Time = "";
+            param.Max = parseInt(document.getElementById("Max").value, 10);
+            param.Min = parseInt(document.getElementById("Min").value, 10);
+            //apost("/update", param);
+		$.post("/update",JSON.stringify(param), function (data, status) {
+                if(data=="Success"){
+			alert("修改成功！");
+			}
+			else{
+				alert("修改失败！"+data);
+				window.location.href = "/water";
+			}
+            	});
+            //window.location.href = "/water";
+        }
+        function verify() {
+            max = parseInt(document.getElementById("Max").value, 10);
+            min = parseInt(document.getElementById("Min").value, 10);
+            if (max <= min) {
+                alert("最大值必须大于最小值！");
+                return false;
+            }
+            max = parseInt(document.getElementById("Max_Num").value, 10);
+            min = parseInt(document.getElementById("Min_Num").value, 10);
+            if (max <= min) {
+                alert("最大值必须大于最小值！");
+                return false;
+            }
+            return true;
+        }
+        function refreshValue(from_scroll) {
+            if (!verify()) {
+                document.getElementById("Max_Num").value = last_max;
+                document.getElementById("Max").value = last_max;
+                document.getElementById("Min_Num").value = last_min;
+                document.getElementById("Min").value = last_min;
+                return;
+            }
+            if (from_scroll) {
+                document.getElementById("Max_Num").value = document.getElementById("Max").value;
+                document.getElementById("Min_Num").value = document.getElementById("Min").value;
+            }
+            else {
+                document.getElementById("Max").value = document.getElementById("Max_Num").value;
+                document.getElementById("Min").value = document.getElementById("Min_Num").value;
+            }
+            last_max = document.getElementById("Max_Num").value;
+            last_min = document.getElementById("Min_Num").value;
+        }
+        function draw_current(value) {
+            var main = document.getElementById("Current_div");
+            //渲染上来一个canvas 多个canvas 的时候注意 id 防止重复
+            main.innerHTML = '<label>当前值</label><canvas id="canvasmain"  width="' + 200 + '" height="' + 200 + '"></canvas>';
+            var vmain = document.getElementById("canvasmain");
+            var c = document.getElementById("canvasmain");
+            var ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.moveTo(100, 100);
+            ctx.arc(100, 100, 50, Math.PI * 1.5, Math.PI * 1.5 + Math.PI * 2 * value / 100, false);
+            ctx.closePath(); ctx.fillStyle = "#0f0"; ctx.fill();
+
+            ctx.strokeStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(100, 100);
+            ctx.arc(100, 100, 50, Math.PI * 1.5, Math.PI * 1.5 + Math.PI * 2, false);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(100, 100);
+            ctx.arc(100, 100, 30, Math.PI * 1.5, Math.PI * 1.5 + Math.PI * 2, false);
+            ctx.closePath();
+            ctx.stroke();
+            
+            //变成圈图，中间加点东西
+            ctx.beginPath();
+            ctx.arc(100, 100, 30, 0, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fillStyle = "#fff";
+            ctx.fill();
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#000";
+            ctx.fillText(value+"%", 100, 100);
+        }
+        $(document).ready(function () {
+            var filters;
+            //draw_current(12);
+            $.get("/data?name=water", function (data, status) {
+                if (data == "__Login") {
+                    window.location.href = "/";
+                }
+                show(data);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <!--<a href="/html/help.html">查看帮助</a>-->
+    <div id="Current_div" style="visibility:visible">
+        <label>当前值</label>
+        <input id="Current" type="number" style="text-align:center" value="0" readonly />
+    </div>
+    <div>
+        <label>时间</label>
+        <input id="Time" type="datetime" style="text-align:center" value="0" readonly />
+    </div>
+    <div>
+        <label>最大值</label>
+        <input id="Max" type="range" style="text-align:center" min="0" max="100" step="1" value="100" onchange="refreshValue(true)" />
+        <input id="Max_Num" type="number" style="text-align:center" min="0" max="100" value="100" onchange="refreshValue(false)" />
+    </div>
+    <div>
+        <label>最小值</label>
+        <input id="Min" type="range" style="text-align:center" min="0" max="100" step="1" value="0" name="最小值" onchange="refreshValue(true)" />
+        <input id="Min_Num" type="number" style="text-align:center" min="0" max="100" value="0" onchange="refreshValue(false)" />
+    </div>
+    <button onclick="send()">更改</button>
+</body>
+</html>

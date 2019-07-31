@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0 , user-scalable=0 , minimum-scale=1.0 , maximum-scale=1.0" />
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="../css/bordered.css" />
+    <script src="../js/ajaxtest.js"></script>
+    <script src="../js/jquery_1.10.2_jquery.min.js"></script>
+    <script>
+        function send() {
+            var user = new Object;
+            user.Name = document.getElementById("pwd").value;
+            user.PWD = document.getElementById("name").value;
+            $.post("/login_usr", JSON.stringify(user), function (data, status) {
+                    window.location.href = "/water";
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <label>登录</label><br />
+    <!--<a href="/html/help.html">查看帮助</a>-->
+    <div>
+        <label>用户名</label>
+        <input id="name" type="text" style="text-align:left" />
+    </div>
+    <div>
+        <label>密码</label>
+        <input id="pwd" type="password" style="text-align:left"/>
+    </div>
+    <button onclick="send()">登录</button>
+</body>
+</html>
