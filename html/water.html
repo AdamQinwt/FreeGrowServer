@@ -31,7 +31,11 @@
 		$.post("/update",JSON.stringify(param), function (data, status) {
                 if(data=="Success"){
 			alert("修改成功！");
-			}
+                }
+                else if(data=="__Login"){
+                    alert("请登录！");
+                    window.location.href = "/login";
+                }
 			else{
 				alert("修改失败！"+data);
 				window.location.href = "/water";

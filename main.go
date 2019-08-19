@@ -5,6 +5,7 @@ import (
 )
 
 func init() {
+	DropTable()
 	CreateTable()
 	p := Params{
 		Name:    "water",

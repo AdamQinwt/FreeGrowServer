@@ -29,6 +29,12 @@ type Params struct {
 	Min     int    `json:"Min"`
 }
 
+func DropTable() error {
+	q := "Drop TABLE " + tableParamsName + "  ;"
+	//fmt.Println(q)
+	return Execute(q)
+}
+
 func CreateTable() error {
 	q := "CREATE TABLE if not exists " + tableParamsName + " ("
 	q += " id INTEGER primary key auto_increment, "
@@ -130,7 +136,7 @@ func DelParams(id int) error {
 }
 
 //Parameters decide whether
-func (params *Params) UpdateParams(current bool,time bool, max bool, min bool) error {
+func (params *Params) UpdateParams(current bool, time bool, max bool, min bool) error {
 	q := "update " + tableParamsName
 	q += " set "
 	first := true
@@ -142,7 +148,7 @@ func (params *Params) UpdateParams(current bool,time bool, max bool, min bool) e
 		if !first {
 			q += " , "
 		}
-		q += ftime + " = '" + params.Time+"'"
+		q += ftime + " = '" + params.Time + "'"
 		first = false
 	}
 	if max {
